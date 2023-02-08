@@ -1,6 +1,7 @@
 package com.teste.primeiroexemplo.repository;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import com.teste.primeiroexemplo.model.Produto;
 
 @Repository
 public class ProdutoRepository {
-    private ArrayList<Produto> produtos = new ArrayList<Produto>();
+    private ArrayList<Produto> produtos = new ArrayList<>();
     private Integer ultimoId = 0;
 
     /**
@@ -44,7 +45,31 @@ public class ProdutoRepository {
         return produto;
     }
 
-    public void deletarProduto(Integer id){
+    /**
+     * Metodo para deletar produto por ID
+     * @param id do produto para ser deletado
+     */
+    public void deletar(Integer id){
         produtos.removeIf(produto -> produto.getId() == id);
     }
+
+    /**
+     * 
+     * @param produto que ser atualizado
+     * @return o produto apos ser atualizado
+     */
+    public Produto atualizar(Produto produto){
+       Optional<Produto> produtoEncontrado = obterPorId(produto.getId());
+
+       if(produtoEncontrado.isEmpty()){
+            throw new InputMismatchException("Produto nao encontrado");
+       } 
+       
+        this.deletar(produto.getId());
+        produtos.add(produto);
+
+        return produto;
+    }
 }
+
+   
