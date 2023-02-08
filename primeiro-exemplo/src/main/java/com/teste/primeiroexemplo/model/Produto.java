@@ -7,7 +7,9 @@ public class Produto {
     private String nome;
     private Integer quantidade;
     private String observacao;
+    private Double valor;
     //#endregion
+    
     //#region metodos
     public Integer getId() {
         return id;
@@ -33,7 +35,12 @@ public class Produto {
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-
+    public Double getValor() {
+        return valor;
+    }
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
     //#endregion
     
 }
