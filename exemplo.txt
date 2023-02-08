@@ -8,5 +8,9 @@ Modelo: OK
 Repositorio de Usuario: OK
     obeterTodos, obterPorId, adicionar, atualizar, deletar.
 
-Servico de Produto:
+Servico de Produto: OK
     obeterTodos, obterPorId, adicionar, atualizar, deletar.
+
+Controller de Produto:
+    obeterTodos, obterPorId, adicionar, atualizar, deletar.
+    
