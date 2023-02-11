@@ -2,12 +2,17 @@ package com.teste.primeiroexemplo.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.teste.primeiroexemplo.model.Produto;
+import com.teste.primeiroexemplo.model.exception.ResourceNotFoundException;
 import com.teste.primeiroexemplo.repository.ProdutoRepository;
+import com.teste.primeiroexemplo.shared.ProdutoDTO;
 
 @Service
 public class ProdutoService {
@@ -18,8 +23,12 @@ public class ProdutoService {
     * Metodo para retornar uma lista de Produtos
     * @return lista de produtos
     */
-    public List<Produto> obterTodos(){
-        return produtoRepository.findAll();
+    public List<ProdutoDTO> obterTodos(){
+        List<Produto> produtos = produtoRepository.findAll();
+
+        return produtos.stream()
+        .map(produto -> new ModelMapper().map(produto, ProdutoDTO.class))
+        .collect(Collectors.toList());
     }
 
      /**
@@ -27,8 +36,13 @@ public class ProdutoService {
      * @param id do produto que sera localizado
      * @return Retorna um produto caso seja encontrado
      */
-    public Optional<Produto> obterPorId(Integer id){
-        return produtoRepository.findById(id);
+    public Optional<ProdutoDTO> obterPorId(Integer id){
+        Optional<Produto> produto = produtoRepository.findById(id);
+        if(produto.isEmpty()){
+            throw new ResourceNotFoundException("Produto com id:" + id + "não encontrado");
+        }
+        ProdutoDTO dto = new ModelMapper().map(produto.get(), ProdutoDTO.class);
+        return Optional.of(dto);
     }
 
      /**
@@ -36,7 +50,7 @@ public class ProdutoService {
      * @param produto produto que sera adicionado
      * @return retorna o produto que foi adicionado
      */
-    public Produto adicionar(Produto produto){
+    public ProdutoDTO adicionar(ProdutoDTO produto){
         return produtoRepository.save(produto);
     }
 
@@ -53,13 +67,13 @@ public class ProdutoService {
      * @param produto atualizado
      * @return o produto apos ser atualizado
      */
-    public Optional<Produto>  atualizar(Integer id, Produto produto){
+    public ProdutoDTO<Produto>  atualizar(Integer id, ProdutoDTO produto){
         return produtoRepository.findById(id).
         map(gravar -> {
             gravar.setNome(produto.getNome());
             gravar.setValor(produto.getValor());
             gravar.setQuantidade(produto.getQuantidade());
-            Produto atualizado = produtoRepository.save(gravar);
+            ProdutoDTO atualizado = produtoRepository.save(gravar);
             return atualizado;
         });
 
