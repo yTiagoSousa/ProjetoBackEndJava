@@ -53,9 +53,15 @@ public class ProdutoService {
      * @param produto atualizado
      * @return o produto apos ser atualizado
      */
-    public Produto atualizar(Integer id, Produto produto){
-        produtoRepository.deleteById(id);
-        produto.setId(id);
-        return produtoRepository.save(produto);
+    public Optional<Produto>  atualizar(Integer id, Produto produto){
+        return produtoRepository.findById(id).
+        map(gravar -> {
+            gravar.setNome(produto.getNome());
+            gravar.setValor(produto.getValor());
+            gravar.setQuantidade(produto.getQuantidade());
+            Produto atualizado = produtoRepository.save(gravar);
+            return atualizado;
+        });
+
     }
 }
