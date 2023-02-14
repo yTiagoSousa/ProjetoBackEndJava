@@ -2,7 +2,6 @@ package com.teste.primeiroexemplo.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -39,10 +38,11 @@ public class ProdutoService {
     public Optional<ProdutoDTO> obterPorId(Integer id){
         Optional<Produto> produto = produtoRepository.findById(id);
         if(produto.isEmpty()){
-            throw new ResourceNotFoundException("Produto com id:" + id + "não encontrado");
-        }
-        ProdutoDTO dto = new ModelMapper().map(produto.get(), ProdutoDTO.class);
+            throw new ResourceNotFoundException("Produto com id:" + id + "não encontrado"); // TEM ALGO ERRADO
+        }else{
+        ProdutoDTO dto = new ModelMapper().map(produto, ProdutoDTO.class);
         return Optional.of(dto);
+        }
     }
 
      /**
@@ -50,8 +50,15 @@ public class ProdutoService {
      * @param produto produto que sera adicionado
      * @return retorna o produto que foi adicionado
      */
-    public ProdutoDTO adicionar(ProdutoDTO produto){
-        return produtoRepository.save(produto);
+    public ProdutoDTO adicionar(ProdutoDTO produtoDto){  
+        produtoDto.setId(null);
+        
+        ModelMapper mapper = new ModelMapper();
+        Produto produto = mapper.map(produtoDto, Produto.class);
+        produto = produtoRepository.save(produto);
+        produtoDto.setId(produto.getId());
+        
+        return produtoDto;
     }
 
     /**
@@ -59,6 +66,10 @@ public class ProdutoService {
      * @param id do produto para ser deletado
      */
     public void deletar(Integer id){
+        Optional<Produto> produto = produtoRepository.findById(id);
+        if(produto.isEmpty()){
+            throw new ResourceNotFoundException("Não foi possivel encontrar produto com id " + id + " Não encontrado" );
+        }
         produtoRepository.deleteById(id);
     }
 
@@ -67,15 +78,11 @@ public class ProdutoService {
      * @param produto atualizado
      * @return o produto apos ser atualizado
      */
-    public ProdutoDTO<Produto>  atualizar(Integer id, ProdutoDTO produto){
-        return produtoRepository.findById(id).
-        map(gravar -> {
-            gravar.setNome(produto.getNome());
-            gravar.setValor(produto.getValor());
-            gravar.setQuantidade(produto.getQuantidade());
-            ProdutoDTO atualizado = produtoRepository.save(gravar);
-            return atualizado;
-        });
-
+    public ProdutoDTO atualizar(Integer id, ProdutoDTO produtoDto){
+        produtoDto.setId(id);
+        ModelMapper mapper = new ModelMapper();
+        Produto produto = mapper.map(produtoDto, Produto.class);
+        produtoRepository.save(produto);
+        return produtoDto;
     }
 }
