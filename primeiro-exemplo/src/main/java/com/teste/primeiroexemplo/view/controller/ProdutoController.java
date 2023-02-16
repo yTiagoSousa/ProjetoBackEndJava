@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.teste.primeiroexemplo.services.ProdutoService;
 import com.teste.primeiroexemplo.shared.ProdutoDTO;
 import com.teste.primeiroexemplo.view.model.ProdutoRequest;
@@ -45,17 +44,14 @@ public class ProdutoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<ProdutoResponse>> obterPorId(@PathVariable Integer id){
-        try {
-            Optional <ProdutoDTO> produtoDto = produtoService.obterPorId(id);
-            ModelMapper mapper = new ModelMapper();
-            ProdutoResponse produtoRes = mapper.map(produtoDto, ProdutoResponse.class);
-            
-            return new ResponseEntity<>(Optional.of(produtoRes), HttpStatus.OK);
+        try{
+            Optional<ProdutoDTO> produtoDto = produtoService.obterPorId(id);
+            ModelMapper mapper = new ModelMapper(); 
+            Optional<ProdutoResponse> produtoResponse = Optional.of(mapper.map(produtoDto.get(), ProdutoResponse.class)); 
+            return new ResponseEntity<>(produtoResponse, HttpStatus.OK);          
         } catch (Exception e) {
-            
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-      
     }
 
     @PostMapping

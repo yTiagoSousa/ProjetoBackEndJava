@@ -38,11 +38,10 @@ public class ProdutoService {
     public Optional<ProdutoDTO> obterPorId(Integer id){
         Optional<Produto> produto = produtoRepository.findById(id);
         if(produto.isEmpty()){
-            throw new ResourceNotFoundException("Produto com id:" + id + "não encontrado"); // TEM ALGO ERRADO
-        }else{
-        ProdutoDTO dto = new ModelMapper().map(produto, ProdutoDTO.class);
-        return Optional.of(dto);
+            throw new ResourceNotFoundException("Erro");
         }
+        ModelMapper mapper = new ModelMapper();
+        return Optional.of(mapper.map(produto.get(), ProdutoDTO.class));
     }
 
      /**
